@@ -6,7 +6,9 @@ import com.mufeng.admin.boilerplate.common.acl.mapper.RolePermissionMapper;
 import com.mufeng.admin.boilerplate.common.acl.model.entity.Permission;
 import com.mufeng.admin.boilerplate.common.acl.model.entity.Role;
 import com.mufeng.admin.boilerplate.common.acl.model.entity.RolePermission;
+import com.mufeng.admin.boilerplate.common.acl.service.PermissionService;
 import com.mufeng.admin.boilerplate.common.acl.service.RolePermissionService;
+import com.mufeng.admin.boilerplate.common.acl.service.RoleService;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -22,9 +24,9 @@ import java.util.Objects;
 @Service
 public class RolePermissionServiceImpl extends ServiceImpl<RolePermissionMapper, RolePermission> implements RolePermissionService {
     @Resource
-    private PermissionServiceImpl permissionServiceImpl;
+    private PermissionService permissionService;
     @Resource
-    private RoleServiceImpl roleService;
+    private RoleService roleService;
 
     /**
      * 移除权限
@@ -46,7 +48,7 @@ public class RolePermissionServiceImpl extends ServiceImpl<RolePermissionMapper,
     public void bindPermissions(String roleCode, List<String> permissionCodes) {
         List<RolePermission> rolePermissions = new ArrayList<>();
         permissionCodes.forEach(permissionCode -> {
-            Permission permission = permissionServiceImpl.getById(permissionCode);
+            Permission permission = permissionService.getById(permissionCode);
             if (!Objects.isNull(permission)) {
                 RolePermission rolePermission = new RolePermission();
                 rolePermission.setRoleCode(roleCode);
@@ -61,7 +63,7 @@ public class RolePermissionServiceImpl extends ServiceImpl<RolePermissionMapper,
     public List<Permission> getPermissionListByRoleCode(String roleCode) {
         List<RolePermission> rolePermissions = listByRoleCode(roleCode);
         List<Permission> permissions = new ArrayList<>();
-        rolePermissions.forEach(item -> permissions.add(permissionServiceImpl.getById(item.getPermissionCode())));
+        rolePermissions.forEach(item -> permissions.add(permissionService.getById(item.getPermissionCode())));
         return permissions;
     }
 

@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.mufeng.admin.boilerplate.common.acl.mapper.RoleMapper;
 import com.mufeng.admin.boilerplate.common.acl.model.dto.RoleWithUserOverviewDTO;
 import com.mufeng.admin.boilerplate.common.acl.model.entity.Role;
+import com.mufeng.admin.boilerplate.common.acl.service.RolePermissionService;
 import com.mufeng.admin.boilerplate.common.acl.service.RoleService;
 import com.mufeng.admin.boilerplate.common.user.service.UserService;
 import org.springframework.beans.BeanUtils;
@@ -24,13 +25,10 @@ public class RoleServiceImpl extends ServiceImpl<RoleMapper, Role> implements Ro
     @Resource
     private UserService userService;
     @Resource
-    private RolePermissionServiceImpl rolePermissionServiceImpl;
+    private RolePermissionService rolePermissionService;
 
-    /**
-     * 角色列表、绑定该角色的用户数、角色拥有的权限
-     * @return
-     */
-    public List<RoleWithUserOverviewDTO> listWithUserAndPermissionOverview() {
+    @Override
+    public List<RoleWithUserOverviewDTO> listRoleDetail() {
         List<RoleWithUserOverviewDTO> roleWithUserOverviews = new ArrayList<>();
         List<Role> roles = super.list();
         roles.forEach((role) -> {
@@ -40,60 +38,44 @@ public class RoleServiceImpl extends ServiceImpl<RoleMapper, Role> implements Ro
         return roleWithUserOverviews;
     }
 
-    /**
-     * 获取角色详情
-     * @param roleCode
-     * @return
-     */
-    public RoleWithUserOverviewDTO getOneWithUserAndPermissionOverview(String roleCode) {
+    @Override
+    public RoleWithUserOverviewDTO getRoleDetail(String roleCode) {
         Role role = this.getById(roleCode);
         return getRoleDetailWithUserAndPermissionOverview(role);
     }
 
-    /**
-     * 创建一个角色
-     * @param role
-     * @param permissionCodes
-     */
-    @Transactional
-    public void createRole(Role role, List<String> permissionCodes) {
-        // 保存角色
+    @Override
+    public void createRole(String roleName, String roleCode, String remark, List<String> permissionCodes) {
+        Role role = new Role();
+        role.setRoleName(roleName);
+        role.setRemark(remark);
+        role.setCode(roleCode);
         this.save(role);
-        rolePermissionServiceImpl.bindPermissions(role.getCode(), permissionCodes);
+        rolePermissionService.bindPermissions(role.getCode(), permissionCodes);
     }
 
-    /**
-     * 更新角色
-     * @param role
-     * @param permissionCodes
-     */
-    @Transactional
-    public void updateRole(Role role, List<String> permissionCodes) {
-        // 更新角色
-        this.updateById(role);
+    @Override
+    public void updateRole(String roleCode, List<String> permissionCodes) {
         // 删除全部绑定权限
-        rolePermissionServiceImpl.removePermission(role.getCode());
+        rolePermissionService.removePermission(roleCode);
         // 重新添加权限
-        rolePermissionServiceImpl.bindPermissions(role.getCode(), permissionCodes);
+        rolePermissionService.bindPermissions(roleCode, permissionCodes);
     }
 
-    /**
-     * 删除权限
-     * @param roleCode
-     */
+    @Override
     @Transactional
-    public void deleteByRoleCode(String roleCode) {
+    public void delete(String roleCode) {
         // 删除role表
         this.removeById(roleCode);
         // 删除角色绑定的权限
-        rolePermissionServiceImpl.removePermission(roleCode);
+        rolePermissionService.removePermission(roleCode);
     }
 
-    public RoleWithUserOverviewDTO getRoleDetailWithUserAndPermissionOverview(Role role) {
+    private RoleWithUserOverviewDTO getRoleDetailWithUserAndPermissionOverview(Role role) {
         RoleWithUserOverviewDTO roleWithUserOverviewDTO = new RoleWithUserOverviewDTO();
         BeanUtils.copyProperties(role, roleWithUserOverviewDTO);
         roleWithUserOverviewDTO.setUserCount(userService.countByRoleCode(role.getCode()));
-        roleWithUserOverviewDTO.setPermissionSet(rolePermissionServiceImpl.getPermissionListByRoleCode(role.getCode()));
+        roleWithUserOverviewDTO.setPermissionSet(rolePermissionService.getPermissionListByRoleCode(role.getCode()));
         return roleWithUserOverviewDTO;
     }
 }
