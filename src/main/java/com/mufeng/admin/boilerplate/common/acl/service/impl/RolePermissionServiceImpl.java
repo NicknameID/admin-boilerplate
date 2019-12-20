@@ -69,7 +69,7 @@ public class RolePermissionServiceImpl extends ServiceImpl<RolePermissionMapper,
     public List<Role> getRoleListByPermissionCode(String permissionCode) {
         List<RolePermission> rolePermissions = listByPermissionCode(permissionCode);
         List<Role> roles = new ArrayList<>();
-        rolePermissions.forEach(rolePermission -> roles.add(roleService));
+        rolePermissions.forEach(rolePermission -> roles.add(roleService.getById(rolePermission.getRoleCode())));
         return null;
     }
 
