@@ -1,4 +1,4 @@
-package com.mufeng.admin.boilerplate.common.user.service;
+package com.mufeng.admin.boilerplate.common.user.service.impl;
 
 import cn.hutool.core.util.IdUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
@@ -15,7 +15,6 @@ import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import java.time.LocalDateTime;
-import java.util.List;
 import java.util.Optional;
 
 /**
@@ -28,23 +27,11 @@ public class UserService extends ServiceImpl<UserMapper, User> {
     @Resource
     private RedisOperator redisOperator;
     @Resource
-    private UserDenyService userDenyService;
+    private UserDenyServiceImpl userDenyServiceImpl;
     @Resource
     private ConfigService configService;
     @Resource
-    private UserPasswordService userPasswordService;
-
-    public List<User> queryByRoleCode(String roleCode) {
-        QueryWrapper<User> queryWrapper = new QueryWrapper<>();
-        queryWrapper.lambda().eq(User::getRoleCode, roleCode);
-        return this.list(queryWrapper);
-    }
-
-    public Integer countByRoleCode(String roleCode) {
-        QueryWrapper<User> queryWrapper = new QueryWrapper<>();
-        queryWrapper.lambda().eq(User::getRoleCode, roleCode);
-        return this.count(queryWrapper);
-    }
+    private UserPasswordServiceImpl userPasswordService;
 
     /**
      * 获取令牌
@@ -58,7 +45,7 @@ public class UserService extends ServiceImpl<UserMapper, User> {
         // 缓存token
         redisOperator.set(key, String.valueOf(uid), tokenExpire);
         // 移除登录次数标记
-        userDenyService.removeLoginTimes(uid);
+        userDenyServiceImpl.clear(uid);
         return token;
     }
 
@@ -100,7 +87,7 @@ public class UserService extends ServiceImpl<UserMapper, User> {
         return getUserByUid(uid.get());
     }
 
-    public void addUser(String username, String password, boolean staff, String roleCode) {
+    public void addUser(String username, String password) {
         Optional<User> optionalUser = getByUsername(username);
         if (optionalUser.isPresent()) {
             throw new UserExistedException();
@@ -110,9 +97,6 @@ public class UserService extends ServiceImpl<UserMapper, User> {
         user.setUsername(username);
         user.setPassword(userPasswordService.encodePassword(password));
         user.setActive(true);
-        user.setStaff(staff);
-        user.setSuperuser(false);
-        user.setRoleCode(roleCode);
         user.setCreatedTime(LocalDateTime.now());
         user.setUpdatedTime(LocalDateTime.now());
         save(user);

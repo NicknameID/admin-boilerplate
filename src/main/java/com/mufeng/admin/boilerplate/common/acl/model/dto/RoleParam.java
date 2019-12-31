@@ -14,7 +14,7 @@ import java.util.List;
 @Data
 public class RoleParam {
     /**
-     * 角色名字
+     * 角色名字(中文)
      */
     @NotEmpty
     private String roleName;
@@ -23,7 +23,7 @@ public class RoleParam {
      * 角色代号
      */
     @NotEmpty
-    private String code;
+    private String roleCode;
 
     /**
      * 备注

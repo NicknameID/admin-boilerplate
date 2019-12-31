@@ -1,6 +1,6 @@
 package com.mufeng.admin.boilerplate.common.interceptor;
 
-import com.mufeng.admin.boilerplate.common.user.service.UserService;
+import com.mufeng.admin.boilerplate.common.user.service.impl.UserService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;

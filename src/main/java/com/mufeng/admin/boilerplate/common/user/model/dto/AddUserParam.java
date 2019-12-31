@@ -17,9 +17,4 @@ public class AddUserParam {
 
     @NotEmpty
     private String password;
-
-    @NotNull
-    private boolean staff;
-
-    private String roleCode;
 }

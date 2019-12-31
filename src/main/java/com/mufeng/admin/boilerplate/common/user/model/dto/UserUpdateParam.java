@@ -10,7 +10,4 @@ import lombok.Data;
 @Data
 public class UserUpdateParam {
     private String password;
-    private Integer roleId;
-    private Boolean staff;
-    private Boolean active;
 }

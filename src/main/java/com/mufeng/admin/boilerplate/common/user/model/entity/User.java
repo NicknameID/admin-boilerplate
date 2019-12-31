@@ -38,21 +38,6 @@ public class User extends BaseEntity {
     private String password;
 
     /**
-     * 角色id
-     */
-    private String roleCode;
-
-    /**
-     * 是否超级管理层
-     */
-    private boolean superuser;
-
-    /**
-     * 是否员工
-     */
-    private boolean staff;
-
-    /**
      * 是否激活
      */
     private boolean active;

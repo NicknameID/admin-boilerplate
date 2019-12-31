@@ -1,9 +1,14 @@
 package com.mufeng.admin.boilerplate.common.model.dto;
 
+import cn.hutool.core.util.IdUtil;
 import com.alibaba.fastjson.JSON;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.mufeng.admin.boilerplate.common.application.ApplicationContextComponent;
+import com.mufeng.admin.boilerplate.common.context.RequestContext;
 import lombok.Builder;
 import lombok.Data;
 
+import javax.annotation.Resource;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 
@@ -39,6 +44,15 @@ public class Result implements Serializable {
                 .build();
     }
 
+    public static Result success() {
+        RequestContext context = ApplicationContextComponent.getBean(RequestContext.class);
+        if (context == null) {
+            return success(IdUtil.simpleUUID());
+        }else {
+            return success(context.getRequestId());
+        }
+    }
+
     public static Result success(String requestId, Object data) {
 
         return Result.builder()
@@ -50,6 +64,15 @@ public class Result implements Serializable {
                 .build();
     }
 
+    public static Result success(Object data) {
+        RequestContext context = ApplicationContextComponent.getBean(RequestContext.class);
+        if (context == null) {
+            return success(IdUtil.simpleUUID());
+        }else {
+            return success(context.getRequestId(), data);
+        }
+    }
+
     public static Result fail(String requestId, Integer code, String message) {
         return Result.builder()
                 .code(code)
@@ -57,5 +80,14 @@ public class Result implements Serializable {
                 .requestId(requestId)
                 .time(LocalDateTime.now())
                 .build();
+    }
+
+    public static Result fail(Integer code, String message) {
+        RequestContext context = ApplicationContextComponent.getBean(RequestContext.class);
+        if (context == null) {
+            return fail(IdUtil.simpleUUID(), code, message);
+        }else {
+            return fail(context.getRequestId(), code, message);
+        }
     }
 }

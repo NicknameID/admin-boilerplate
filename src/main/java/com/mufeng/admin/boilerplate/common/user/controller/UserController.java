@@ -1,6 +1,5 @@
 package com.mufeng.admin.boilerplate.common.user.controller;
 
-import com.mufeng.admin.boilerplate.common.context.RequestContext;
 import com.mufeng.admin.boilerplate.common.user.model.dto.UserUpdateParam;
 import com.mufeng.admin.boilerplate.common.util.http.IpUtil;
 import com.mufeng.admin.boilerplate.common.model.dto.Result;
@@ -8,8 +7,8 @@ import com.mufeng.admin.boilerplate.common.user.exception.UserNotExistException;
 import com.mufeng.admin.boilerplate.common.user.model.dto.AddUserParam;
 import com.mufeng.admin.boilerplate.common.user.model.dto.UserLoginParam;
 import com.mufeng.admin.boilerplate.common.user.model.entity.User;
-import com.mufeng.admin.boilerplate.common.user.service.UserPasswordService;
-import com.mufeng.admin.boilerplate.common.user.service.UserService;
+import com.mufeng.admin.boilerplate.common.user.service.impl.UserPasswordServiceImpl;
+import com.mufeng.admin.boilerplate.common.user.service.impl.UserService;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
@@ -29,11 +28,9 @@ import java.util.Optional;
 @RequestMapping("/common/user")
 public class UserController {
     @Resource
-    private RequestContext context;
-    @Resource
     private UserService userService;
     @Resource
-    private UserPasswordService userPasswordService;
+    private UserPasswordServiceImpl userPasswordService;
 
     @PostMapping("/login")
     public Result login(@Valid @RequestBody UserLoginParam userLoginParam, HttpServletRequest request) {
@@ -51,23 +48,18 @@ public class UserController {
         userInfo.put("username", user.getUsername());
         userInfo.put("token", token);
         userInfo.put("time", LocalDateTime.now());
-        return Result.success(context.getRequestId(), userInfo);
+        return Result.success(userInfo);
     }
 
     @PostMapping("/add")
     public Result addUser(@Valid @RequestBody AddUserParam addUserParam) {
-        userService.addUser(
-                addUserParam.getUsername(),
-                addUserParam.getPassword(),
-                addUserParam.isStaff(),
-                addUserParam.getRoleCode()
-        );
-        return Result.success(context.getRequestId());
+        userService.addUser(addUserParam.getUsername(), addUserParam.getPassword());
+        return Result.success();
     }
 
     @PutMapping("/{uid}")
     public Result update(@PathVariable(name = "uid") Long uid, @Valid @RequestBody UserUpdateParam userUpdateParam) {
         userService.updateUser(uid, userUpdateParam);
-        return Result.success(context.getRequestId());
+        return Result.success();
     }
 }

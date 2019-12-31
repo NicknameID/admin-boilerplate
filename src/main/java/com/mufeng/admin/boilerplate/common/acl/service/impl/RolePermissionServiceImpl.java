@@ -4,7 +4,6 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.mufeng.admin.boilerplate.common.acl.mapper.RolePermissionMapper;
 import com.mufeng.admin.boilerplate.common.acl.model.entity.Permission;
-import com.mufeng.admin.boilerplate.common.acl.model.entity.Role;
 import com.mufeng.admin.boilerplate.common.acl.model.entity.RolePermission;
 import com.mufeng.admin.boilerplate.common.acl.service.PermissionService;
 import com.mufeng.admin.boilerplate.common.acl.service.RolePermissionService;
@@ -33,7 +32,7 @@ public class RolePermissionServiceImpl extends ServiceImpl<RolePermissionMapper,
      * @param roleCode 角色代号
      */
     @Override
-    public void removePermission(String roleCode) {
+    public void removeBind(String roleCode) {
         LambdaQueryWrapper<RolePermission> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.eq(RolePermission::getRoleCode, roleCode);
         this.remove(queryWrapper);
@@ -45,7 +44,7 @@ public class RolePermissionServiceImpl extends ServiceImpl<RolePermissionMapper,
      * @param permissionCodes 权限列表
      */
     @Override
-    public void bindPermissions(String roleCode, List<String> permissionCodes) {
+    public void bind(String roleCode, List<String> permissionCodes) {
         List<RolePermission> rolePermissions = new ArrayList<>();
         permissionCodes.forEach(permissionCode -> {
             Permission permission = permissionService.getById(permissionCode);
@@ -60,28 +59,14 @@ public class RolePermissionServiceImpl extends ServiceImpl<RolePermissionMapper,
     }
 
     @Override
-    public List<Permission> getPermissionListByRoleCode(String roleCode) {
-        List<RolePermission> rolePermissions = listByRoleCode(roleCode);
-        List<Permission> permissions = new ArrayList<>();
-        rolePermissions.forEach(item -> permissions.add(permissionService.getById(item.getPermissionCode())));
-        return permissions;
-    }
-
-    @Override
-    public List<Role> getRoleListByPermissionCode(String permissionCode) {
-        List<RolePermission> rolePermissions = listByPermissionCode(permissionCode);
-        List<Role> roles = new ArrayList<>();
-        rolePermissions.forEach(rolePermission -> roles.add(roleService.getById(rolePermission.getRoleCode())));
-        return null;
-    }
-
-    private List<RolePermission> listByRoleCode(String roleCode) {
+    public List<RolePermission> listByRoleCode(String roleCode) {
         LambdaQueryWrapper<RolePermission> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.eq(RolePermission::getRoleCode, roleCode);
         return this.list(queryWrapper);
     }
 
-    private List<RolePermission> listByPermissionCode(String permissionCode) {
+    @Override
+    public List<RolePermission> listByPermissionCode(String permissionCode) {
         LambdaQueryWrapper<RolePermission> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.eq(RolePermission::getPermissionCode, permissionCode);
         return this.list(queryWrapper);
