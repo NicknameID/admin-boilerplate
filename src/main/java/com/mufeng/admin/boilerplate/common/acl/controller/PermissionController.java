@@ -22,7 +22,7 @@ public class PermissionController {
     private PermissionService permissionService;
 
     // 权限树
-    @GetMapping("/permission/tree")
+    @GetMapping("/tree")
     public Result tree() {
         List<PermissionTreeDTO> permissionTrees = permissionService.tree();
         return Result.success(permissionTrees);

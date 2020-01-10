@@ -4,7 +4,9 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.serializer.SerializerFeature;
 import okhttp3.*;
 import org.springframework.http.HttpMethod;
+import org.springframework.stereotype.Component;
 
+import javax.annotation.Resource;
 import java.util.Map;
 
 /**
@@ -12,17 +14,12 @@ import java.util.Map;
  * @Date 2019-11-24 18:13
  * @Version 1.0
  */
+@Component
 public class HttpUtil {
     private static final MediaType JSON_TYPE = MediaType.parse("utils/json; charset=utf-8");
+
+    @Resource
     private OkHttpClient okHttpClient;
-
-    public HttpUtil(OkHttpClient client) {
-        okHttpClient = client;
-    }
-
-    public static HttpUtil client(OkHttpClient client) {
-        return new HttpUtil(client);
-    }
 
     public String doRequest(HttpMethod method, String url, Map<String, String> headers, RequestBody body) {
         if (okHttpClient == null) throw new RuntimeException("OkHttpClient NullPointerException");

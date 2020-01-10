@@ -1,7 +1,6 @@
 package com.mufeng.admin.boilerplate.config;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateDeserializer;
@@ -22,7 +21,7 @@ import java.time.LocalDateTime;
 @Configuration
 public class CommonConfig {
     @Bean
-    public ObjectMapper configObjectMapper() {
+    public ObjectMapper configJackson() {
         ObjectMapper mapper = new ObjectMapper();
         JavaTimeModule javaTimeModule = new JavaTimeModule();
         javaTimeModule.addSerializer(LocalDateTime.class, new LocalDateTimeSerializer(TimeConst.standardDateTimeFormatter));

@@ -10,7 +10,7 @@ import lombok.Getter;
  */
 public enum PermissionModuleEnum {
     SYSTEM_CONFIG("system_config", "系统配置", null),
-        RUMTIME_CONFIGURATION("rumtime_configuration", "系统运行参数配置", PermissionModuleEnum.SYSTEM_CONFIG);
+        RUMTIME_CONFIGURATION("rumtime_configuration", "系统运行参数配置", SYSTEM_CONFIG);
 
     @Getter
     private String code;

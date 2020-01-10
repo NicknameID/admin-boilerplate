@@ -1,6 +1,6 @@
 package com.mufeng.admin.boilerplate.common.listener;
 
-import com.mufeng.admin.boilerplate.common.acl.service.impl.PermissionServiceImpl;
+import com.mufeng.admin.boilerplate.common.acl.service.PermissionService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.context.event.ApplicationStartedEvent;
 import org.springframework.context.ApplicationListener;
@@ -17,12 +17,12 @@ import javax.annotation.Resource;
 @Slf4j
 public class StartedListener implements ApplicationListener<ApplicationStartedEvent> {
     @Resource
-    private PermissionServiceImpl permissionServiceImpl;
+    private PermissionService permissionService;
 
     @Override
     public void onApplicationEvent(ApplicationStartedEvent applicationStartedEvent) {
         log.info("开始同步权限到数据库....start");
-        permissionServiceImpl.syncToDB();
+        permissionService.syncToDB();
         log.info("权限同步任务完成....success!");
     }
 }

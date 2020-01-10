@@ -52,7 +52,7 @@ public class ACLServiceImpl implements ACLService {
         RoleWithUserOverviewDTO roleWithUserOverviewDTO = new RoleWithUserOverviewDTO();
         BeanUtils.copyProperties(role, roleWithUserOverviewDTO);
         roleWithUserOverviewDTO.setUserCount(userRoleService.countByRoleCode(role.getCode()));
-        roleWithUserOverviewDTO.setPermissionSet(getPermissionListByRoleCode(role.getCode()));
+        roleWithUserOverviewDTO.setPermissions(getPermissionListByRoleCode(role.getCode()));
         return roleWithUserOverviewDTO;
     }
 

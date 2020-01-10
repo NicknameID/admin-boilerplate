@@ -1,17 +1,20 @@
 package com.mufeng.admin.boilerplate.common.acl.service.impl;
 
-import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.mufeng.admin.boilerplate.common.acl.mapper.PermissionMapper;
 import com.mufeng.admin.boilerplate.common.acl.model.dto.PermissionTreeDTO;
 import com.mufeng.admin.boilerplate.common.acl.model.entity.Permission;
 import com.mufeng.admin.boilerplate.common.acl.service.PermissionService;
 import com.mufeng.admin.boilerplate.config.PermissionModuleEnum;
+import lombok.NonNull;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * @Author HuangTianyu
@@ -19,11 +22,48 @@ import java.util.*;
  * @Version 1.0
  */
 @Service
+@Slf4j
 public class PermissionServiceImpl extends ServiceImpl<PermissionMapper, Permission> implements PermissionService {
     @Override
     public List<PermissionTreeDTO> tree() {
-        List<Permission> permissions = new LinkedList<>(this.list());
-        return mapTree(permissions);
+        List<Permission> permissions = this.list();
+        List<Permission> topLevelPermissions = permissions.stream()
+                .filter(PermissionServiceImpl::isTopLevelPermission)
+                .collect(Collectors.toList());
+        return mapTree(permissions, topLevelPermissions);
+    }
+
+    private static boolean isTopLevelPermission(@NonNull Permission permission) {
+        String parentCode = permission.getParent();
+        return StringUtils.isEmpty(parentCode);
+    }
+
+    private List<PermissionTreeDTO> mapTree(List<Permission> source, List<Permission> topLevelPermissions) {
+        List<PermissionTreeDTO> permissionTrees = new ArrayList<>();
+        topLevelPermissions.forEach(permission -> {
+            PermissionTreeDTO permissionTreeDTO = new PermissionTreeDTO();
+            BeanUtils.copyProperties(permission, permissionTreeDTO);
+            List<Permission> childrenPermissions = filterByParent(source, permission.getCode());
+            if (childrenPermissions.size() > 0) {
+                permissionTreeDTO.setChildren(mapTree(source, childrenPermissions));
+            }else {
+                permissionTreeDTO.setChildren(Collections.emptyList());
+            }
+            permissionTrees.add(permissionTreeDTO);
+        });
+        return permissionTrees;
+    }
+
+    private static List<Permission> filterByParent(List<Permission> source, String parentCode) {
+        return source.stream()
+                .filter(permission -> hasParent(permission, parentCode))
+                .collect(Collectors.toList());
+    }
+
+    private static boolean hasParent(@NonNull Permission permission, String parentCode) {
+        String parent = permission.getParent();
+        if (parent == null) return false;
+        return parent.equals(parentCode);
     }
 
     /**
@@ -34,37 +74,15 @@ public class PermissionServiceImpl extends ServiceImpl<PermissionMapper, Permiss
     public void syncToDB() {
         for (PermissionModuleEnum permissionModuleEnum : PermissionModuleEnum.values()) {
             Permission permission = new Permission();
-            permission.setCode(permissionModuleEnum.getCode().toLowerCase());
+            permission.setCode(permissionModuleEnum.getCode());
             permission.setPermissionName(permissionModuleEnum.getPermissionName());
             PermissionModuleEnum parent = permissionModuleEnum.getParent();
             if (Objects.isNull(parent)) {
                 permission.setParent(null);
             }else {
-                permission.setParent(parent.getCode().toLowerCase());
+                permission.setParent(parent.getCode());
             }
             this.saveOrUpdate(permission);
         }
-    }
-
-    private List<Permission> listByParent(String parentCode) {
-        LambdaQueryWrapper<Permission> queryWrapper = new LambdaQueryWrapper<>();
-        queryWrapper.eq(Permission::getParent, parentCode);
-        return this.list(queryWrapper);
-    }
-
-    private List<PermissionTreeDTO> mapTree(List<Permission> source) {
-        List<PermissionTreeDTO> permissionTrees = new ArrayList<>();
-        source.forEach(permission -> {
-            PermissionTreeDTO permissionTreeDTO = new PermissionTreeDTO();
-            BeanUtils.copyProperties(permission, permissionTreeDTO);
-            List<Permission> childrenPermissions = listByParent(permission.getCode());
-            if (childrenPermissions.size() > 0) {
-                permissionTreeDTO.setChildren(mapTree(childrenPermissions));
-            }else {
-                permissionTreeDTO.setChildren(Collections.emptyList());
-            }
-            permissionTrees.add(permissionTreeDTO);
-        });
-        return permissionTrees;
     }
 }

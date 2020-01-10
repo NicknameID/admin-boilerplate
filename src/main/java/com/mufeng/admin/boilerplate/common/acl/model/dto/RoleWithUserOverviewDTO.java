@@ -19,5 +19,5 @@ public class RoleWithUserOverviewDTO extends Role implements Serializable {
 
     private Integer userCount;
 
-    private List<Permission> permissionSet;
+    private List<Permission> permissions;
 }
