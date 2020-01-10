@@ -17,10 +17,6 @@ spring:
         enabled: false
         clean-disabled: true # 这个选项必须为true，防止误删数据库
         locations: 'classpath:db/migration'
-    jackson:
-        time-zone: GMT+8
-        date-format: yyyy-MM-dd HH:mm:ss
-        default-property-inclusion: non_null
 mybatis-plus:
     configuration:
         mapUnderscoreToCamelCase: true
