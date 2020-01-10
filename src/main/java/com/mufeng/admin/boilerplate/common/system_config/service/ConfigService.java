@@ -37,6 +37,7 @@ public class ConfigService extends ServiceImpl<ConfigMapper, Config> {
         saveOrUpdate(config);
     }
 
+    @Cacheable(value = "ConfigService.get",key = "#key")
     public <T> T get(String key, Class<T> clazz) {
         String value = get(key);
         if (Objects.isNull(value)) {

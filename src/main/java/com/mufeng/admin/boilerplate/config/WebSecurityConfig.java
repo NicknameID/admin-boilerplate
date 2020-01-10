@@ -56,7 +56,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
                 .authorizeRequests()
                 .antMatchers(HttpMethod.OPTIONS, "/**").permitAll() // OPTIONS请求全部放行
-                .antMatchers(HttpMethod.POST, "/common/user/login").permitAll()  //公共接口放行，其他接口全部接受验证
+                .antMatchers(HttpMethod.POST, "/common/user/login", "/common/user/refresh").permitAll()  //公共接口放行，其他接口全部接受验证
                 .antMatchers(HttpMethod.POST).authenticated()
                 .antMatchers(HttpMethod.PUT).authenticated()
                 .antMatchers(HttpMethod.DELETE).authenticated()

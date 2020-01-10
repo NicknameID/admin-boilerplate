@@ -83,7 +83,7 @@ public class JwtTokenOperator {
 
     private Boolean isTokenExpired(String token) {
         String username = getUsernameFromToken(token);
-        if(doesNotExistCacheToken(username)) return false;
+        if(doesNotExistCacheToken(username)) return true;
         final Date expiration = getExpirationDateFromToken(token);
         return expiration.before(new Date());
     }
@@ -143,6 +143,6 @@ public class JwtTokenOperator {
     private boolean doesNotExistCacheToken(String username) {
         // 保存到redis
         String key = redisOperator.buildKeyWithPrefix(TOKEN_CACHE_PREFIX, username);
-        return redisOperator.hasKey(key);
+        return !redisOperator.hasKey(key);
     }
 }

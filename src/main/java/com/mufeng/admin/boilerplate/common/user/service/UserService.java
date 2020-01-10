@@ -13,6 +13,8 @@ import java.util.Optional;
 public interface UserService extends IService<User> {
     String login(String username, String password);
 
+    User my();
+
     Optional<User> getUserByToken(String token);
 
     Optional<User> getByUsername(String username);

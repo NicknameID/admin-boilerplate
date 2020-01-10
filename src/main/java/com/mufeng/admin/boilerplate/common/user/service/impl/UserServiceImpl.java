@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.mufeng.admin.boilerplate.common.components.JwtTokenOperator;
+import com.mufeng.admin.boilerplate.common.context.RequestContext;
 import com.mufeng.admin.boilerplate.common.user.exception.PasswordErrorException;
 import com.mufeng.admin.boilerplate.common.user.exception.UserExistedException;
 import com.mufeng.admin.boilerplate.common.user.mapper.UserMapper;
@@ -45,6 +46,8 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     private AuthenticationManager authenticationManager;
     @Resource
     private CustomUserDetailsService customUserDetailsService;
+    @Resource
+    private RequestContext context;
 
     @Override
     public String login(String username, String password) {
@@ -67,11 +70,16 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         return token;
     }
 
+    @Override
+    public User my() {
+        Long uid = context.getUid();
+        return this.getById(uid);
+    }
+
     public Optional<User> getUserByToken(String token) {
         if (StringUtils.isEmpty(token)) return Optional.empty();
-        LambdaQueryWrapper<User> queryWrapper = Wrappers.lambdaQuery();
-        queryWrapper.eq(User::getLastToken, token);
-         return Optional.ofNullable(this.getOne(queryWrapper));
+        String username = jwtTokenOperator.getUsernameFromToken(token);
+        return getByUsername(username);
     }
 
 

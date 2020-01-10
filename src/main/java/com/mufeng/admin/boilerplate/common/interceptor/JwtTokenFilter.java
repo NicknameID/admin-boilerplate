@@ -42,8 +42,6 @@ public class JwtTokenFilter extends OncePerRequestFilter {
                 );
                 authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                 SecurityContextHolder.getContext().setAuthentication(authentication);
-            }else {
-                throw new InvalidTokenException();
             }
         }
         next(request, response, filterChain); // 继续执行接下来的过滤器

@@ -40,7 +40,7 @@ public class User extends BaseEntity {
     /**
      * 是否激活
      */
-    private boolean active;
+    private Boolean active;
 
     /**
      * 最后登录ip

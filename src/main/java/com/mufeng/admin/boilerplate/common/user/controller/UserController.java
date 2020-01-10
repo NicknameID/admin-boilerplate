@@ -1,8 +1,12 @@
 package com.mufeng.admin.boilerplate.common.user.controller;
 
+import com.baomidou.mybatisplus.core.toolkit.StringUtils;
+import com.mufeng.admin.boilerplate.common.components.JwtTokenOperator;
+import com.mufeng.admin.boilerplate.common.interceptor.InterceptorUtil;
 import com.mufeng.admin.boilerplate.common.model.dto.Result;
 import com.mufeng.admin.boilerplate.common.constant.ConfigConst;
 import com.mufeng.admin.boilerplate.common.system_config.service.ConfigService;
+import com.mufeng.admin.boilerplate.common.user.exception.InvalidTokenException;
 import com.mufeng.admin.boilerplate.common.user.exception.UserNotExistException;
 import com.mufeng.admin.boilerplate.common.user.model.dto.AddUserParam;
 import com.mufeng.admin.boilerplate.common.user.model.dto.UserLoginParam;
@@ -32,6 +36,10 @@ public class UserController {
     private UserService userService;
     @Resource
     private ConfigService configService;
+    @Resource
+    private JwtTokenOperator jwtTokenOperator;
+    @Resource
+    private InterceptorUtil interceptorUtil;
 
     @PostMapping("/login")
     public Result login(@Valid @RequestBody UserLoginParam userLoginParam, HttpServletRequest request) {
@@ -57,6 +65,18 @@ public class UserController {
         loginInfo.put("time", LocalDateTime.now());
         loginInfo.put("expiresAt", expiresAt);
         return loginInfo;
+    }
+
+    @PostMapping("/refresh")
+    public Result refresh(HttpServletRequest request) {
+        final String token = interceptorUtil.getToke(request);
+        if (StringUtils.isEmpty(token)) throw new InvalidTokenException();
+        boolean canRefresh = jwtTokenOperator.canTokenBeRefreshed(token);
+        if (!canRefresh) throw new InvalidTokenException();
+        final String newToken = jwtTokenOperator.refreshToken(token);
+        Optional<User> user = userService.getUserByToken(token);
+        user.orElseThrow(InvalidTokenException::new);
+        return Result.success(buildLoginInfo(user.get(), newToken));
     }
 
     @PostMapping("/add")
