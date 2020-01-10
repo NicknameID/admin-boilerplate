@@ -2,6 +2,8 @@ package com.mufeng.admin.boilerplate.common.util.http;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.serializer.SerializerFeature;
+import com.google.common.collect.Maps;
+import com.mufeng.admin.boilerplate.common.exception.HttpClientException;
 import okhttp3.*;
 import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Component;
@@ -35,7 +37,7 @@ public class HttpUtil {
             return resBody.string();
         }catch (Exception e) {
             e.printStackTrace();
-            throw new RuntimeException(e.getMessage());
+            throw new HttpClientException(e.getMessage());
         }
     }
 
@@ -48,8 +50,12 @@ public class HttpUtil {
         return doRequest(HttpMethod.GET, reqUrl, headers, null);
     }
 
-    public String post(String url, Map<String, String> headers, Map<String, Object> body) {
+    public String postJsonBody(String url, Map<String, Object> body) {
         RequestBody reqBody = RequestBody.create(JSON_TYPE, JSON.toJSONString(body, SerializerFeature.WriteMapNullValue));
-        return doRequest(HttpMethod.POST, url, headers, reqBody);
+        return doRequest(HttpMethod.POST, url, Maps.newHashMap(), reqBody);
+    }
+
+    public String postHeader(String url, Map<String, String> headers) {
+        return doRequest(HttpMethod.POST, url, headers, null);
     }
 }
