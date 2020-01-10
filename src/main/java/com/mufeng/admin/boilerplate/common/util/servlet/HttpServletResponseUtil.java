@@ -1,6 +1,6 @@
 package com.mufeng.admin.boilerplate.common.util.servlet;
 
-import com.mufeng.admin.boilerplate.common.constant.Headers;
+import com.mufeng.admin.boilerplate.common.constant.HeaderConst;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -33,10 +33,10 @@ public class HttpServletResponseUtil {
     }
 
     public static void response(HttpServletResponse response, String resBody) {
-        reponse(response, "UTF-8", Headers.JSON_CONTENT_TYPE_UTF_8, 200, resBody);
+        reponse(response, "UTF-8", HeaderConst.JSON_CONTENT_TYPE_UTF_8, 200, resBody);
     }
 
     public static void response(HttpServletResponse response, Integer statusCode, String resBody) {
-        reponse(response, "UTF-8", Headers.JSON_CONTENT_TYPE_UTF_8, statusCode, resBody);
+        reponse(response, "UTF-8", HeaderConst.JSON_CONTENT_TYPE_UTF_8, statusCode, resBody);
     }
 }

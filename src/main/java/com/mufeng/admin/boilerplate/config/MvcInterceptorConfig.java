@@ -1,7 +1,6 @@
 package com.mufeng.admin.boilerplate.config;
 
-import com.mufeng.admin.boilerplate.common.interceptor.AuthInterceptor;
-import com.mufeng.admin.boilerplate.common.interceptor.HttpRequestInterceptor;
+import com.mufeng.admin.boilerplate.common.interceptor.RequestInterceptor;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
@@ -16,16 +15,11 @@ import javax.annotation.Resource;
 @Configuration
 public class MvcInterceptorConfig implements WebMvcConfigurer {
     @Resource
-    private HttpRequestInterceptor httpRequestInterceptor;
-    @Resource
-    private AuthInterceptor authInterceptor;
+    private RequestInterceptor requestInterceptor;
 
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
-        registry.addInterceptor(authInterceptor)
-                .addPathPatterns("/**")
-                .excludePathPatterns("/common/user/login");
-        registry.addInterceptor(httpRequestInterceptor)
+        registry.addInterceptor(requestInterceptor)
                 .addPathPatterns("/**");
     }
 }

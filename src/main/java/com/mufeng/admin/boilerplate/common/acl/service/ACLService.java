@@ -25,6 +25,8 @@ public interface ACLService {
      */
     List<Permission> getPermissionListByRoleCode(String roleCode);
 
+    List<Permission> getPermissionListByUserId(Long uid);
+
     /**
      * 获取权限的角色列表
      * @param permissionCode 权限代号

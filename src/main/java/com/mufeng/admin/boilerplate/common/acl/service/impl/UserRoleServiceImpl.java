@@ -51,6 +51,13 @@ public class UserRoleServiceImpl extends ServiceImpl<UserRoleMapper, UserRole> i
         }
     }
 
+    @Override
+    public List<UserRole> getUserRolesByUid(Long uid) {
+        LambdaQueryWrapper<UserRole> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(UserRole::getUid, uid);
+        return this.list(queryWrapper);
+    }
+
     private boolean roleHasUser(String roleCode) {
         LambdaQueryWrapper<UserRole> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.eq(UserRole::getRoleCode, roleCode);

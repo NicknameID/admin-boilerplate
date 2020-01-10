@@ -1,14 +1,15 @@
 package com.mufeng.admin.boilerplate.common.user.controller;
 
-import com.mufeng.admin.boilerplate.common.user.model.dto.UserUpdateParam;
-import com.mufeng.admin.boilerplate.common.util.http.IpUtil;
 import com.mufeng.admin.boilerplate.common.model.dto.Result;
+import com.mufeng.admin.boilerplate.common.constant.ConfigConst;
+import com.mufeng.admin.boilerplate.common.system_config.service.ConfigService;
 import com.mufeng.admin.boilerplate.common.user.exception.UserNotExistException;
 import com.mufeng.admin.boilerplate.common.user.model.dto.AddUserParam;
 import com.mufeng.admin.boilerplate.common.user.model.dto.UserLoginParam;
+import com.mufeng.admin.boilerplate.common.user.model.dto.UserUpdateParam;
 import com.mufeng.admin.boilerplate.common.user.model.entity.User;
-import com.mufeng.admin.boilerplate.common.user.service.impl.UserPasswordServiceImpl;
-import com.mufeng.admin.boilerplate.common.user.service.impl.UserService;
+import com.mufeng.admin.boilerplate.common.user.service.UserService;
+import com.mufeng.admin.boilerplate.common.util.http.IpUtil;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
@@ -30,25 +31,32 @@ public class UserController {
     @Resource
     private UserService userService;
     @Resource
-    private UserPasswordServiceImpl userPasswordService;
+    private ConfigService configService;
 
     @PostMapping("/login")
     public Result login(@Valid @RequestBody UserLoginParam userLoginParam, HttpServletRequest request) {
-        Optional<User> optionalUser = userService.getByUsername(userLoginParam.getUsername());
+        final String username = userLoginParam.getUsername();
+        final String passowrd = userLoginParam.getPassword();
+        Optional<User> optionalUser = userService.getByUsername(username);
         optionalUser.orElseThrow(UserNotExistException::new);
-        User user = optionalUser.get();
+        final User user = optionalUser.get();
         Long uid = user.getId();
-        // 校验密码
-        userPasswordService.verifyPassword(uid, userLoginParam.getPassword());
-        // 获取token
-        String token = userService.getAccessToken(uid);
+        String token = userService.login(username, passowrd);
         // 更新用户状态
         userService.loginUpdate(uid, token, IpUtil.getIp(request));
-        Map<String, Object> userInfo = new HashMap<>();
-        userInfo.put("username", user.getUsername());
-        userInfo.put("token", token);
-        userInfo.put("time", LocalDateTime.now());
-        return Result.success(userInfo);
+        return Result.success(buildLoginInfo(user, token));
+    }
+
+    private Map<String, Object> buildLoginInfo(User user, String token) {
+        Map<String, Object> loginInfo = new HashMap<>();
+        int expires = configService.get(ConfigConst.LoginExpire, Integer.class);
+        LocalDateTime expiresAt = LocalDateTime.now().plusSeconds(expires);
+        user.setPassword(null);
+        loginInfo.put("user", user);
+        loginInfo.put("token", token);
+        loginInfo.put("time", LocalDateTime.now());
+        loginInfo.put("expiresAt", expiresAt);
+        return loginInfo;
     }
 
     @PostMapping("/add")

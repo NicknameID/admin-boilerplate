@@ -13,4 +13,6 @@ public interface UserDenyService {
     void lock(Long uid);
 
     String generateKey(Long uid);
+
+    void verifyTryTimes(Long uid);
 }

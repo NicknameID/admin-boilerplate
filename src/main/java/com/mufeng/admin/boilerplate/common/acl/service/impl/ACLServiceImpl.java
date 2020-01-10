@@ -4,13 +4,16 @@ import com.mufeng.admin.boilerplate.common.acl.model.dto.RoleWithUserOverviewDTO
 import com.mufeng.admin.boilerplate.common.acl.model.entity.Permission;
 import com.mufeng.admin.boilerplate.common.acl.model.entity.Role;
 import com.mufeng.admin.boilerplate.common.acl.model.entity.RolePermission;
+import com.mufeng.admin.boilerplate.common.acl.model.entity.UserRole;
 import com.mufeng.admin.boilerplate.common.acl.service.*;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * @Author HuangTianyu
@@ -59,6 +62,21 @@ public class ACLServiceImpl implements ACLService {
         List<Permission> permissions = new ArrayList<>();
         rolePermissions.forEach(item -> permissions.add(permissionService.getById(item.getPermissionCode())));
         return permissions;
+    }
+
+    @Override
+    public List<Permission> getPermissionListByUserId(Long uid) {
+        List<UserRole> userRoles = userRoleService.getUserRolesByUid(uid);
+        if (userRoles.size() <= 0) return Collections.emptyList();
+        List<Permission> permissions = new ArrayList<>();
+        userRoles.forEach(userRole -> {
+            List<Permission> permissionList = getPermissionListByRoleCode(userRole.getRoleCode());
+            permissions.addAll(permissionList);
+        });
+        // 权限去重
+        return permissions.stream()
+                .distinct()
+                .collect(Collectors.toList());
     }
 
     @Override

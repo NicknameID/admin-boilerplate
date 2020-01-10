@@ -18,8 +18,9 @@ spring:
         clean-disabled: true # 这个选项必须为true，防止误删数据库
         locations: 'classpath:db/migration'
     jackson:
-        time-zone: 'Asia/Shanghai'
-        date-format: com.fasterxml.jackson.databind.util.ISO8601DateFormat
+        time-zone: GMT+8
+        date-format: yyyy-MM-dd HH:mm:ss
+        default-property-inclusion: non_null
 mybatis-plus:
     configuration:
         mapUnderscoreToCamelCase: true

@@ -18,7 +18,7 @@ import java.util.List;
 @RestController
 @Validated
 @RequestMapping("/common/acl/user")
-public class UserController {
+public class ACLUserController {
     @Resource
     private UserRoleService userRoleService;
 

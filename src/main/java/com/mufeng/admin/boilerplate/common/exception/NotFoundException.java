@@ -9,4 +9,8 @@ public class NotFoundException extends CustomException {
     public NotFoundException() {
         super(404, "找不到指定对象");
     }
+
+    public NotFoundException(int code, String msg) {
+        super(code, msg);
+    }
 }

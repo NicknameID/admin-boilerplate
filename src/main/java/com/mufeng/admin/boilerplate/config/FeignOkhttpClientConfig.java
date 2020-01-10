@@ -1,6 +1,6 @@
 package com.mufeng.admin.boilerplate.config;
 
-import com.mufeng.admin.boilerplate.common.http.OkHttpLogInterceptor;
+import com.mufeng.admin.boilerplate.common.util.http.OkHttpLogInterceptor;
 import feign.Client;
 import feign.Contract;
 import feign.Feign;

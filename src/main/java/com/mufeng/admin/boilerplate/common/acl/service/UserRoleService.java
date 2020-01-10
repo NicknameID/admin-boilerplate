@@ -26,4 +26,6 @@ public interface UserRoleService extends IService<UserRole> {
 //    void verfiyUserHasRole(Long uid);
 
     void verifyRoleHasUser(String roleCode);
+
+    List<UserRole> getUserRolesByUid(Long uid);
 }

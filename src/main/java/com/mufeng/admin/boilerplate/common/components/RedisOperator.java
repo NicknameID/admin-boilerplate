@@ -26,6 +26,12 @@ public class RedisOperator {
         return key == null ? null : redisTemplate.opsForValue().get(key);
     }
 
+    public boolean hasKey(String key) {
+        if (key == null) return false;
+        Boolean hasKey = redisTemplate.hasKey(key);
+        return Objects.isNull(hasKey) ? false : hasKey;
+    }
+
     public boolean set(String key, Object value) {
         try {
             redisTemplate.opsForValue().set(key, value);

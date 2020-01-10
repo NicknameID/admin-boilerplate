@@ -22,6 +22,7 @@
         <mybatis-plus.version>3.1.2</mybatis-plus.version>
         <guava.version>28.1-jre</guava.version>
         <hutool.version>5.0.6</hutool.version>
+        <jjwt.version>0.9.0</jjwt.version>
     </properties>
 
     <dependencies>
@@ -63,6 +64,23 @@
         <dependency>
             <groupId>org.springframework.cloud</groupId>
             <artifactId>spring-cloud-starter-openfeign</artifactId>
+        </dependency>
+
+        <!-- Security -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-security</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.jsonwebtoken</groupId>
+            <artifactId>jjwt</artifactId>
+            <version>${jjwt.version}</version>
+        </dependency>
+        <!-- https://mvnrepository.com/artifact/org.glassfish/javax.xml.bind -->
+        <dependency>
+            <groupId>org.glassfish</groupId>
+            <artifactId>javax.xml.bind</artifactId>
+            <version>10.0-b28</version>
         </dependency>
 
         <!-- DB -->
@@ -107,12 +125,6 @@
             <groupId>cn.hutool</groupId>
             <artifactId>hutool-all</artifactId>
             <version>${hutool.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.jetbrains</groupId>
-            <artifactId>annotations</artifactId>
-            <version>13.0</version>
-            <scope>compile</scope>
         </dependency>
 
 
