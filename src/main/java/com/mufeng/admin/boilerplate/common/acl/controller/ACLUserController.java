@@ -24,7 +24,8 @@ public class ACLUserController {
 
     @PostMapping("/{uid}/role/bind")
     @Transactional(rollbackFor = Exception.class)
-    public Result bindUserRole(@PathVariable Long uid, @Min(1) @RequestBody List<String> roles) {
+    public Result bindUserRole(@PathVariable Long uid, @RequestBody List<String> roles) {
+        if (roles.size() <= 0) return Result.success();
         // 移除全部绑定
         userRoleService.removeBind(uid);
         // 添加绑定
