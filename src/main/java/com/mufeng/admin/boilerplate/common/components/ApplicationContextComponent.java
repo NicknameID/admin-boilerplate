@@ -1,4 +1,4 @@
-package com.mufeng.admin.boilerplate.common.application;
+package com.mufeng.admin.boilerplate.common.components;
 
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;

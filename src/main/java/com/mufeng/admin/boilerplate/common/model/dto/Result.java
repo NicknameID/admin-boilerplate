@@ -2,13 +2,11 @@ package com.mufeng.admin.boilerplate.common.model.dto;
 
 import cn.hutool.core.util.IdUtil;
 import com.alibaba.fastjson.JSON;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.mufeng.admin.boilerplate.common.application.ApplicationContextComponent;
+import com.mufeng.admin.boilerplate.common.components.ApplicationContextComponent;
 import com.mufeng.admin.boilerplate.common.context.RequestContext;
 import lombok.Builder;
 import lombok.Data;
 
-import javax.annotation.Resource;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 

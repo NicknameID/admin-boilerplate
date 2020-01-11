@@ -9,8 +9,10 @@ import lombok.Getter;
  * @Version 1.0
  */
 public enum PermissionModuleEnum {
-    SYSTEM_CONFIG("system_config", "系统配置", null),
-        RUMTIME_CONFIGURATION("rumtime_configuration", "系统运行参数配置", SYSTEM_CONFIG);
+    SYSTEM_CONFIG("system_config", "系统管理", null),
+        RUMTIME_CONFIGURATION("rumtime_config", "系统运行参数配置", SYSTEM_CONFIG),
+    ACL_CONFIG("acl_config", "权限管理", null),
+    USER_ACCOUNT("user_account", "用户账户管理", null);
 
     @Getter
     private String code;
