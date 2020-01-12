@@ -1,9 +1,7 @@
 package com.mufeng.admin.boilerplate.common.user.service.impl;
 
-import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.StringUtils;
-import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.mufeng.admin.boilerplate.common.components.JwtTokenOperator;
 import com.mufeng.admin.boilerplate.common.context.RequestContext;
@@ -16,6 +14,7 @@ import com.mufeng.admin.boilerplate.common.user.service.CustomUserDetailsService
 import com.mufeng.admin.boilerplate.common.user.service.UserDenyService;
 import com.mufeng.admin.boilerplate.common.user.service.UserPasswordService;
 import com.mufeng.admin.boilerplate.common.user.service.UserService;
+import com.mufeng.admin.boilerplate.common.util.IdUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -113,7 +112,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
             throw new UserExistedException();
         }
         User user = new User();
-        user.setId(com.mufeng.admin.boilerplate.common.util.IdUtil.generalLongId());
+        user.setId(IdUtils.generalLongId());
         user.setUsername(username);
         user.setPassword(userPasswordService.encodePassword(password));
         user.setActive(true);
