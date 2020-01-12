@@ -1,6 +1,7 @@
 package com.mufeng.admin.boilerplate.common.user.controller;
 
 import com.baomidou.mybatisplus.core.toolkit.StringUtils;
+import com.mufeng.admin.boilerplate.common.acl.annotation.RequirePermission;
 import com.mufeng.admin.boilerplate.common.components.JwtTokenOperator;
 import com.mufeng.admin.boilerplate.common.constant.ConfigConst;
 import com.mufeng.admin.boilerplate.common.interceptor.InterceptorUtil;
@@ -14,7 +15,6 @@ import com.mufeng.admin.boilerplate.common.user.model.dto.UserUpdateParam;
 import com.mufeng.admin.boilerplate.common.user.model.entity.User;
 import com.mufeng.admin.boilerplate.common.user.service.UserService;
 import com.mufeng.admin.boilerplate.common.util.http.IpUtil;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
@@ -24,6 +24,8 @@ import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
+
+import static com.mufeng.admin.boilerplate.config.PermissionModuleEnum.USER_ACCOUNT;
 
 /**
  * @Author HuangTianyu
@@ -81,14 +83,14 @@ public class UserController {
     }
 
     @PostMapping("/add")
-    @PreAuthorize("hasAnyAuthority('user_account')")
+    @RequirePermission(USER_ACCOUNT)
     public Result addUser(@Valid @RequestBody AddUserParam addUserParam) {
         userService.addUser(addUserParam.getUsername(), addUserParam.getPassword());
         return Result.success();
     }
 
     @PutMapping("/{uid}")
-    @PreAuthorize("hasAnyAuthority('user_account')")
+    @RequirePermission(USER_ACCOUNT)
     public Result update(@PathVariable(name = "uid") Long uid, @Valid @RequestBody UserUpdateParam userUpdateParam) {
         userService.updateUser(uid, userUpdateParam);
         return Result.success();

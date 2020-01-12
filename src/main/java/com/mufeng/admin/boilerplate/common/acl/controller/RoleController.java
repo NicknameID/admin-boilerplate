@@ -1,5 +1,6 @@
 package com.mufeng.admin.boilerplate.common.acl.controller;
 
+import com.mufeng.admin.boilerplate.common.acl.annotation.RequirePermission;
 import com.mufeng.admin.boilerplate.common.acl.model.dto.RoleParam;
 import com.mufeng.admin.boilerplate.common.acl.model.entity.Role;
 import com.mufeng.admin.boilerplate.common.acl.service.ACLService;
@@ -7,7 +8,6 @@ import com.mufeng.admin.boilerplate.common.acl.service.RolePermissionService;
 import com.mufeng.admin.boilerplate.common.acl.service.RoleService;
 import com.mufeng.admin.boilerplate.common.acl.service.UserRoleService;
 import com.mufeng.admin.boilerplate.common.model.dto.Result;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
@@ -15,6 +15,8 @@ import javax.annotation.Resource;
 import javax.validation.Valid;
 import java.time.LocalDateTime;
 import java.util.List;
+
+import static com.mufeng.admin.boilerplate.config.PermissionModuleEnum.ACL_CONFIG;
 
 /**
  * @Author HuangTianyu
@@ -35,21 +37,21 @@ public class RoleController {
 
     // 角色详情列表
     @GetMapping("/details")
-    @PreAuthorize("hasAnyAuthority('acl_config')")
+    @RequirePermission(ACL_CONFIG)
     public Result roles() {
         return Result.success(aclService.listRoleDetail());
     }
 
     // 获取角色详情
     @GetMapping("/{roleCode}/detail")
-    @PreAuthorize("hasAnyAuthority('acl_config')")
+    @RequirePermission(ACL_CONFIG)
     public Result detail(@PathVariable String roleCode) {
         return Result.success(aclService.getRoleDetail(roleCode));
     }
 
     // 创建角色
     @PostMapping("/detail")
-    @PreAuthorize("hasAnyAuthority('acl_config')")
+    @RequirePermission(ACL_CONFIG)
     public Result create(@Valid @RequestBody RoleParam roleParam) {
         List<String> permissionCodes = roleParam.getPermissionCodes();
         roleService.createRole(
@@ -63,7 +65,7 @@ public class RoleController {
 
     // 更新角色信息
     @PutMapping("/{roleCode}/detail")
-    @PreAuthorize("hasAnyAuthority('acl_config')")
+    @RequirePermission(ACL_CONFIG)
     @Transactional(rollbackFor = Exception.class)
     public Result update(@PathVariable String roleCode, @Valid @RequestBody RoleParam roleParam) {
         List<String> permissionCodes = roleParam.getPermissionCodes();
@@ -84,7 +86,7 @@ public class RoleController {
     // 删除角色相关资源
     @DeleteMapping("/{roleCode}/detail")
     @Transactional(rollbackFor = Exception.class)
-    @PreAuthorize("hasAnyAuthority('acl_config')")
+    @RequirePermission(ACL_CONFIG)
     public Result delete(@PathVariable String roleCode) {
         // 校验角色是否还有绑定用户，有存在用户绑定的角色不能删除
         userRoleService.verifyRoleHasUser(roleCode);
