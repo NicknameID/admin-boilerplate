@@ -19,11 +19,17 @@ public class CustomException extends RuntimeException {
 
     public CustomException(String msg) {
         super(msg);
+        this.message = msg;
     }
 
     public CustomException(Integer code, String msg) {
         super(msg);
         this.code = code;
         this.message = msg;
+    }
+
+    public CustomException extendsMsg(String msg) {
+        this.message = String.format("[%s]: %s", this.message, msg);
+        return this;
     }
 }

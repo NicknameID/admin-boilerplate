@@ -64,10 +64,11 @@ public class RoleController {
     }
 
     // 更新角色信息
-    @PutMapping("/{roleCode}/detail")
+    @PutMapping("/detail")
     @RequirePermission(ACL_CONFIG)
     @Transactional(rollbackFor = Exception.class)
-    public Result update(@PathVariable String roleCode, @Valid @RequestBody RoleParam roleParam) {
+    public Result update(@Valid @RequestBody RoleParam roleParam) {
+        final String roleCode = roleParam.getRoleCode();
         List<String> permissionCodes = roleParam.getPermissionCodes();
         Role role = new Role();
         role.setCode(roleParam.getRoleCode());

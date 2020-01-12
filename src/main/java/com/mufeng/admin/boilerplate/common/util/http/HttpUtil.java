@@ -37,7 +37,7 @@ public class HttpUtil {
             return resBody.string();
         }catch (Exception e) {
             e.printStackTrace();
-            throw new HttpClientException(e.getMessage());
+            throw new HttpClientException().extendsMsg(e.getMessage());
         }
     }
 

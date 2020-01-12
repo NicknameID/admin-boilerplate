@@ -5,6 +5,7 @@ import com.mufeng.admin.boilerplate.common.acl.mapper.RoleMapper;
 import com.mufeng.admin.boilerplate.common.acl.model.entity.Role;
 import com.mufeng.admin.boilerplate.common.acl.service.RolePermissionService;
 import com.mufeng.admin.boilerplate.common.acl.service.RoleService;
+import com.mufeng.admin.boilerplate.common.exception.ConflictException;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -26,6 +27,7 @@ public class RoleServiceImpl extends ServiceImpl<RoleMapper, Role> implements Ro
         role.setRoleName(roleName);
         role.setRemark(remark);
         role.setCode(roleCode);
+        if (this.getById(roleCode) != null) throw new ConflictException().extendsMsg("角色已存在");
         this.save(role);
         rolePermissionService.bind(role.getCode(), permissionCodes);
     }

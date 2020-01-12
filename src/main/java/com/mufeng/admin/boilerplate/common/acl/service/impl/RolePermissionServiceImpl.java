@@ -1,6 +1,8 @@
 package com.mufeng.admin.boilerplate.common.acl.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.mufeng.admin.boilerplate.common.acl.mapper.RolePermissionMapper;
 import com.mufeng.admin.boilerplate.common.acl.model.entity.Permission;
@@ -47,15 +49,26 @@ public class RolePermissionServiceImpl extends ServiceImpl<RolePermissionMapper,
     public void bind(String roleCode, List<String> permissionCodes) {
         List<RolePermission> rolePermissions = new ArrayList<>();
         permissionCodes.forEach(permissionCode -> {
-            Permission permission = permissionService.getById(permissionCode);
-            if (!Objects.isNull(permission)) {
-                RolePermission rolePermission = new RolePermission();
-                rolePermission.setRoleCode(roleCode);
-                rolePermission.setPermissionCode(permissionCode);
-                rolePermissions.add(rolePermission);
+            if (!hasBind(roleCode, permissionCode)) {
+                Permission permission = permissionService.getById(permissionCode);
+                if (!Objects.isNull(permission)) {
+                    RolePermission rolePermission = new RolePermission();
+                    rolePermission.setRoleCode(roleCode);
+                    rolePermission.setPermissionCode(permissionCode);
+                    rolePermissions.add(rolePermission);
+                }
             }
         });
-        this.saveBatch(rolePermissions);
+        if (rolePermissions.size() > 0) {
+            this.saveBatch(rolePermissions);
+        }
+    }
+
+    private boolean hasBind(String roleCode, String permissionCode) {
+        LambdaQueryWrapper<RolePermission> queryWrapper = Wrappers.lambdaQuery();
+        queryWrapper.eq(RolePermission::getRoleCode, roleCode);
+        queryWrapper.eq(RolePermission::getPermissionCode, permissionCode);
+        return !Objects.isNull(this.getOne(queryWrapper));
     }
 
     @Override

@@ -11,8 +11,4 @@ public class HttpClientException extends CustomException {
     public HttpClientException() {
         super(code, defaultMsg);
     }
-
-    public HttpClientException(String extendsMsg) {
-        super(code, String.format("[%s]: %s", defaultMsg, extendsMsg));
-    }
 }

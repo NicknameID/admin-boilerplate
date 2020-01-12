@@ -7,6 +7,7 @@ import com.mufeng.admin.boilerplate.common.acl.model.entity.Role;
 import com.mufeng.admin.boilerplate.common.acl.model.entity.UserRole;
 import com.mufeng.admin.boilerplate.common.acl.service.RoleService;
 import com.mufeng.admin.boilerplate.common.acl.service.UserRoleService;
+import com.mufeng.admin.boilerplate.common.exception.ConflictException;
 import com.mufeng.admin.boilerplate.common.exception.CustomException;
 import org.springframework.stereotype.Service;
 
@@ -60,8 +61,8 @@ public class UserRoleServiceImpl extends ServiceImpl<UserRoleMapper, UserRole> i
 
     @Override
     public void verifyRoleHasUser(String roleCode) {
-        if (!roleHasUser(roleCode)) {
-            throw new CustomException("该角色还有用户绑定，无法删除");
+        if (roleHasUser(roleCode)) {
+            throw new ConflictException().extendsMsg("该角色还有用户绑定，无法删除");
         }
     }
 
