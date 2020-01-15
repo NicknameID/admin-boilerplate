@@ -1,9 +1,11 @@
 package com.mufeng.admin.boilerplate.common.user.service;
 
+import com.google.common.collect.Lists;
 import com.mufeng.admin.boilerplate.common.acl.model.entity.Permission;
 import com.mufeng.admin.boilerplate.common.acl.service.ACLService;
-import com.mufeng.admin.boilerplate.common.user.model.bo.UserDetailsBO;
 import com.mufeng.admin.boilerplate.common.user.model.entity.User;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -25,13 +27,20 @@ public class CustomUserDetailsService implements UserDetailsService {
     private ACLService aclService;
 
     @Override
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        Optional<User> user = userService.getByUsername(username);
+    public UserDetails loadUserByUsername(String s) throws UsernameNotFoundException {
+        Optional<User> user = userService.getByUsername(s);
         if (user.isEmpty()) {
-            String errorMsg = String.format("Username not found: %s", username);
+            String errorMsg = String.format("Username not found: %s", s);
             throw new UsernameNotFoundException(errorMsg);
         }
         List<Permission> permissionList = aclService.getPermissionListByUserId(user.get().getId());
-        return UserDetailsBO.getInstance(user.get(), permissionList);
+        List<GrantedAuthority> authorities = Lists.newArrayList();
+        for (Permission permission : permissionList) {
+            SimpleGrantedAuthority simpleGrantedAuthority = new SimpleGrantedAuthority(permission.getCode());
+            authorities.add(simpleGrantedAuthority);
+        }
+        final String username = user.get().getUsername();
+        final String password = user.get().getPassword();
+        return new org.springframework.security.core.userdetails.User(username, password, authorities);
     }
 }

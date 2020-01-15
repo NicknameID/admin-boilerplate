@@ -1,8 +1,7 @@
 package com.mufeng.admin.boilerplate.common.interceptor;
 
-import com.mufeng.admin.boilerplate.common.components.JwtTokenOperator;
-import com.mufeng.admin.boilerplate.common.user.exception.InvalidTokenException;
 import com.mufeng.admin.boilerplate.common.user.service.CustomUserDetailsService;
+import com.mufeng.admin.boilerplate.common.user.service.UserTokenService;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -22,21 +21,21 @@ import java.io.IOException;
  * 2020-01-08 17:57
  */
 @Component
-public class JwtTokenFilter extends OncePerRequestFilter {
+public class TokenFilter extends OncePerRequestFilter {
     @Resource
     private CustomUserDetailsService customUserDetailsService;
     @Resource
-    private JwtTokenOperator jwtTokenOperator;
+    private UserTokenService userTokenService;
     @Resource
     private InterceptorUtil interceptorUtil;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         final String authToken = interceptorUtil.getToke(request);
-        String username = jwtTokenOperator.getUsernameFromToken(authToken);
-        if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+        final String username = userTokenService.getUsernameFromToken(authToken);
+        if (username != null && !username.isEmpty() && SecurityContextHolder.getContext().getAuthentication() == null) {
             UserDetails userDetails = customUserDetailsService.loadUserByUsername(username);
-            if ( jwtTokenOperator.validateToken(authToken, userDetails) ) {
+            if ( userTokenService.validateToken(authToken, userDetails) ) {
                 UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
                         userDetails, null, userDetails.getAuthorities()
                 );

@@ -9,9 +9,7 @@ public class ConfigConst {
 
     public static final String LoginMaxRetryTimes = "login.maxRetryTimes";
 
-    public static final String JwtSecret = "jwt.secret";
+    public static final String TokenPrefix = "token.prefix";
 
-    public static final String JwtTokenPrefix = "jwt.token.prefix";
-
-    public static final String JwtTokenHeaderName = "jwt.token.headerName";
+    public static final String TokenHeaderName = "token.headerName";
 }

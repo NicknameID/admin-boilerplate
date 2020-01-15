@@ -1,6 +1,6 @@
 package com.mufeng.admin.boilerplate.config;
 
-import com.mufeng.admin.boilerplate.common.interceptor.JwtTokenFilter;
+import com.mufeng.admin.boilerplate.common.interceptor.TokenFilter;
 import com.mufeng.admin.boilerplate.common.user.service.CustomUserDetailsService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -32,8 +32,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     private PasswordEncoder passwordEncoder;
 
     @Bean
-    public JwtTokenFilter authenticationTokenFilterBean() throws Exception {
-        return new JwtTokenFilter();
+    public TokenFilter authenticationTokenFilterBean() throws Exception {
+        return new TokenFilter();
     }
 
     @Bean

@@ -1,6 +1,6 @@
 package com.mufeng.admin.boilerplate.common.util;
 
-        import java.util.concurrent.ThreadLocalRandom;
+import java.util.concurrent.ThreadLocalRandom;
 
 /**
  * @Author HuangTianyu

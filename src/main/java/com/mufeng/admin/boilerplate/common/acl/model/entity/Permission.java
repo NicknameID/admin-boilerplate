@@ -1,6 +1,5 @@
 package com.mufeng.admin.boilerplate.common.acl.model.entity;
 
-import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.mufeng.admin.boilerplate.common.model.entity.BaseEntity;
 import lombok.Data;

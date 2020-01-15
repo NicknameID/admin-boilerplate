@@ -3,10 +3,11 @@ package com.mufeng.admin.boilerplate.common.user.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.mufeng.admin.boilerplate.common.components.JwtTokenOperator;
+import com.mufeng.admin.boilerplate.common.user.service.UserTokenService;
 import com.mufeng.admin.boilerplate.common.context.RequestContext;
 import com.mufeng.admin.boilerplate.common.user.exception.PasswordErrorException;
 import com.mufeng.admin.boilerplate.common.user.exception.UserExistedException;
+import com.mufeng.admin.boilerplate.common.user.exception.UserNotExistException;
 import com.mufeng.admin.boilerplate.common.user.mapper.UserMapper;
 import com.mufeng.admin.boilerplate.common.user.model.dto.UserUpdateParam;
 import com.mufeng.admin.boilerplate.common.user.model.entity.User;
@@ -21,7 +22,6 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -36,7 +36,7 @@ import java.util.Optional;
 @Service
 public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements UserService {
     @Resource
-    private JwtTokenOperator jwtTokenOperator;
+    private UserTokenService userTokenService;
     @Resource
     private UserDenyService userDenyService;
     @Resource
@@ -53,19 +53,19 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         UsernamePasswordAuthenticationToken upToken = new UsernamePasswordAuthenticationToken( username, password );
         Authentication authentication;
         Optional<User> optionalUser = getByUsername(username);;
-        optionalUser.ifPresent(user -> {
-            userDenyService.verifyTryTimes(user.getId());
-        });
+        optionalUser.orElseThrow(UserNotExistException::new);
+        final User user = optionalUser.get();
+        final long uid = user.getId();
+        userDenyService.verifyTryTimes(uid);
         try {
             authentication = authenticationManager.authenticate(upToken);
         }catch (AuthenticationException e) {
-            optionalUser.ifPresent(user -> userDenyService.plus(user.getId()));
+            userDenyService.plus(uid);
             throw new PasswordErrorException();
         }
         SecurityContextHolder.getContext().setAuthentication(authentication);
-        final UserDetails userDetails = customUserDetailsService.loadUserByUsername( username );
-        final String token = jwtTokenOperator.generateToken(userDetails);
-        optionalUser.ifPresent(user -> userDenyService.clear(user.getId()));
+        final String token = userTokenService.generateToken(optionalUser.get());
+        userDenyService.clear(uid); // 认证成功，清除失败累加器
         return token;
     }
 
@@ -77,7 +77,8 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
 
     public Optional<User> getUserByToken(String token) {
         if (StringUtils.isEmpty(token)) return Optional.empty();
-        String username = jwtTokenOperator.getUsernameFromToken(token);
+        String username = userTokenService.getUsernameFromToken(token);
+        if (username.isEmpty()) return Optional.empty();
         return getByUsername(username);
     }
 

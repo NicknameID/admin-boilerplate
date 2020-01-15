@@ -66,13 +66,7 @@ public class ACLServiceImpl implements ACLService {
 
     @Override
     public List<Permission> getPermissionListByUserId(Long uid) {
-        List<UserRole> userRoles = userRoleService.getUserRolesByUid(uid);
-        if (userRoles.size() <= 0) return Collections.emptyList();
-        List<Permission> permissions = new ArrayList<>();
-        userRoles.forEach(userRole -> {
-            List<Permission> permissionList = getPermissionListByRoleCode(userRole.getRoleCode());
-            permissions.addAll(permissionList);
-        });
+        List<Permission> permissions = permissionService.listByUid(uid);
         // 权限去重
         return permissions.stream()
                 .distinct()

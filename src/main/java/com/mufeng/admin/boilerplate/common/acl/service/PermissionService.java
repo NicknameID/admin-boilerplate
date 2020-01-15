@@ -22,4 +22,6 @@ public interface PermissionService extends IService<Permission> {
      * 同步权限到数据库表
      */
     void syncToDB();
+
+    List<Permission> listByUid(Long uid);
 }

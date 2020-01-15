@@ -13,6 +13,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.annotation.Resource;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -24,6 +25,9 @@ import java.util.stream.Collectors;
 @Service
 @Slf4j
 public class PermissionServiceImpl extends ServiceImpl<PermissionMapper, Permission> implements PermissionService {
+    @Resource
+    private PermissionMapper permissionMapper;
+
     @Override
     public List<PermissionTreeDTO> tree() {
         List<Permission> permissions = this.list();
@@ -84,5 +88,10 @@ public class PermissionServiceImpl extends ServiceImpl<PermissionMapper, Permiss
             }
             this.saveOrUpdate(permission);
         }
+    }
+
+    @Override
+    public List<Permission> listByUid(Long uid) {
+        return permissionMapper.listByUid(uid);
     }
 }

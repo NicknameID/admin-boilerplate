@@ -2,7 +2,7 @@ package com.mufeng.admin.boilerplate.common.user.controller;
 
 import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.mufeng.admin.boilerplate.common.acl.annotation.RequirePermission;
-import com.mufeng.admin.boilerplate.common.components.JwtTokenOperator;
+import com.mufeng.admin.boilerplate.common.user.service.UserTokenService;
 import com.mufeng.admin.boilerplate.common.constant.ConfigConst;
 import com.mufeng.admin.boilerplate.common.interceptor.InterceptorUtil;
 import com.mufeng.admin.boilerplate.common.model.dto.Result;
@@ -40,7 +40,7 @@ public class UserController {
     @Resource
     private ConfigService configService;
     @Resource
-    private JwtTokenOperator jwtTokenOperator;
+    private UserTokenService userTokenService;
     @Resource
     private InterceptorUtil interceptorUtil;
 
@@ -74,9 +74,9 @@ public class UserController {
     public Result refresh(HttpServletRequest request) {
         final String token = interceptorUtil.getToke(request);
         if (StringUtils.isEmpty(token)) throw new InvalidTokenException();
-        boolean canRefresh = jwtTokenOperator.canTokenBeRefreshed(token);
+        boolean canRefresh = userTokenService.canTokenBeRefreshed(token);
         if (!canRefresh) throw new InvalidTokenException();
-        final String newToken = jwtTokenOperator.refreshToken(token);
+        final String newToken = userTokenService.refreshToken(token);
         Optional<User> user = userService.getUserByToken(token);
         user.orElseThrow(InvalidTokenException::new);
         return Result.success(buildLoginInfo(user.get(), newToken));
