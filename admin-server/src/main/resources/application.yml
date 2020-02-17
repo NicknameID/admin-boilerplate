@@ -1,0 +1,32 @@
+server:
+    port: ${SERVER_PORT:8080}
+spring:
+    application:
+        name: admin-boilerpalte # 每个应用要设置不一样的名字
+    datasource:
+        username: ${MYSQL_USERNAME:root}
+        password: ${MYSQL_PASSWORD:root}
+        url: jdbc:mysql://${MYSQL_URL:localhost:8889/admin_boilerplate}?characterEncoding=utf-8&useSSL=true&allowMultiQueries=true&serverTimezone=Asia/Shanghai
+        driver-class-name: com.mysql.cj.jdbc.Driver
+    flyway: # 数据库迁移配置
+        enabled: false
+        clean-disabled: true # 这个选项必须为true，防止误删数据库
+        locations: 'classpath:db/migration'
+    jackson:
+        default-property-inclusion: non_null
+        serialization:
+            WRITE_DATES_AS_TIMESTAMPS: false
+    session:
+        store-type: redis
+        timeout: 1200 # 秒
+        redis:
+          flush-mode: on-save
+    redis:
+        database: ${REDIS_DB:0}
+        host: ${REDIS_HOST:localhost}
+        port: ${REDIS_PORT:6379}
+mybatis-plus:
+    configuration:
+        mapUnderscoreToCamelCase: true
+logging:
+#    config: 'classpath:logback-prod.xml'
