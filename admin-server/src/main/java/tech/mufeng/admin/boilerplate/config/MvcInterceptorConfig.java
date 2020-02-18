@@ -23,11 +23,20 @@ public class MvcInterceptorConfig implements WebMvcConfigurer {
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(authInterceptor)
-                .addPathPatterns("/**")
-                .excludePathPatterns("/common/acl/user/login", "/common/acl/user/logout");
+                .addPathPatterns("/api/**")
+                .order(1)
+                .excludePathPatterns(getExcludePatterns());
         registry.addInterceptor(requestInterceptor)
-                .addPathPatterns("/**")
-                .excludePathPatterns("/common/acl/user/login", "/common/acl/user/logout");
+                .addPathPatterns("/api/**")
+                .order(2)
+                .excludePathPatterns(getExcludePatterns());
 
+    }
+
+    public String[] getExcludePatterns() {
+        return new String[] {
+                "/api/common/acl/user/login",
+                "/api/common/acl/user/logout",
+        };
     }
 }

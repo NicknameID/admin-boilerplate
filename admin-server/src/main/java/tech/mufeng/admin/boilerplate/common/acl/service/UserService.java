@@ -5,4 +5,8 @@ import tech.mufeng.admin.boilerplate.common.base.service.BaseService;
 
 public interface UserService extends BaseService<User> {
     User getUserByUsername(String username);
+
+    void login(String username, String password);
+
+    void logout();
 }

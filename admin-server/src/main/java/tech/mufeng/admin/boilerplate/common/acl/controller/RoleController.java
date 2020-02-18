@@ -1,16 +1,19 @@
 package tech.mufeng.admin.boilerplate.common.acl.controller;
 
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.*;
 import tech.mufeng.admin.boilerplate.common.acl.annotation.RequirePermission;
-import tech.mufeng.admin.boilerplate.common.acl.model.param.RoleParam;
 import tech.mufeng.admin.boilerplate.common.acl.model.dto.RoleWithUserOverview;
 import tech.mufeng.admin.boilerplate.common.acl.model.entity.Role;
+import tech.mufeng.admin.boilerplate.common.acl.model.param.RoleParam;
 import tech.mufeng.admin.boilerplate.common.acl.service.ACLService;
 import tech.mufeng.admin.boilerplate.common.acl.service.RolePermissionService;
 import tech.mufeng.admin.boilerplate.common.acl.service.RoleService;
 import tech.mufeng.admin.boilerplate.common.acl.service.UserRoleService;
 import tech.mufeng.admin.boilerplate.common.model.dto.Result;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import javax.validation.Valid;
@@ -24,8 +27,9 @@ import static tech.mufeng.admin.boilerplate.config.PermissionModuleEnum.ACL_CONF
  * @Date 2019-11-29 16:16
  * @Version 1.0
  */
+@Api(tags = "角色相关操作")
 @RestController
-@RequestMapping("/common/acl/role")
+@RequestMapping("/api/common/acl/role")
 public class RoleController {
     @Resource
     private RoleService roleService;
@@ -37,6 +41,7 @@ public class RoleController {
     private UserRoleService userRoleService;
 
     // 角色详情列表
+    @ApiOperation("角色详情列表")
     @GetMapping("/details")
     @RequirePermission(ACL_CONFIG)
     public Result<List<RoleWithUserOverview>> roles() {
@@ -44,16 +49,18 @@ public class RoleController {
     }
 
     // 获取角色详情
+    @ApiOperation("获取角色详情")
     @GetMapping("/{roleCode}/detail")
     @RequirePermission(ACL_CONFIG)
-    public Result<RoleWithUserOverview> detail(@PathVariable String roleCode) {
+    public Result<RoleWithUserOverview> detail(@ApiParam("角色code") @PathVariable String roleCode) {
         return Result.success(aclService.getRoleDetail(roleCode));
     }
 
     // 创建角色
+    @ApiOperation("创建角色")
     @PostMapping("/detail")
     @RequirePermission(ACL_CONFIG)
-    public Result<String> create(@Valid @RequestBody RoleParam roleParam) {
+    public Result<Object> create(@Valid @RequestBody RoleParam roleParam) {
         List<String> permissionCodes = roleParam.getPermissionCodes();
         roleService.createRole(
                 roleParam.getRoleName(),
@@ -65,10 +72,11 @@ public class RoleController {
     }
 
     // 更新角色信息
+    @ApiOperation("更新角色信息")
     @PutMapping("/detail")
     @RequirePermission(ACL_CONFIG)
     @Transactional(rollbackFor = Exception.class)
-    public Result<String> update(@Valid @RequestBody RoleParam roleParam) {
+    public Result<Object> update(@Valid @RequestBody RoleParam roleParam) {
         final String roleCode = roleParam.getRoleCode();
         List<String> permissionCodes = roleParam.getPermissionCodes();
         Role role = new Role();
@@ -86,10 +94,11 @@ public class RoleController {
     }
 
     // 删除角色相关资源
+    @ApiOperation("删除角色相关资源")
     @DeleteMapping("/{roleCode}/detail")
     @Transactional(rollbackFor = Exception.class)
     @RequirePermission(ACL_CONFIG)
-    public Result<String> delete(@PathVariable String roleCode) {
+    public Result<Object> delete(@PathVariable String roleCode) {
         // 校验角色是否还有绑定用户，有存在用户绑定的角色不能删除
         userRoleService.verifyRoleHasUser(roleCode);
         // 删除角色

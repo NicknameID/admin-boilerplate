@@ -2,6 +2,7 @@ package tech.mufeng.admin.boilerplate.common.context.service.impl;
 
 import tech.mufeng.admin.boilerplate.common.acl.model.entity.Permission;
 import tech.mufeng.admin.boilerplate.common.acl.service.PermissionService;
+import tech.mufeng.admin.boilerplate.common.constant.UserSessionField;
 import tech.mufeng.admin.boilerplate.common.context.model.RequestContext;
 import tech.mufeng.admin.boilerplate.common.context.service.RequestContextService;
 import tech.mufeng.admin.boilerplate.common.util.SimpleCommonUtil;
@@ -31,7 +32,7 @@ public class RequestContextServiceImpl implements RequestContextService {
     }
 
     private List<String> getPermission() {
-        long uid = (int) httpSession.getAttribute("uid");
+        long uid = (long) httpSession.getAttribute(UserSessionField.UID);
         List<Permission> permissions = permissionService.listByUid(uid);
         return permissions.stream()
                 .map(Permission::getCode)
