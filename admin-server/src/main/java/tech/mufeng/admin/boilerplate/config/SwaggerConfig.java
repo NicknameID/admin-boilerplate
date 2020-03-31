@@ -28,9 +28,9 @@ public class SwaggerConfig {
         return new Docket(DocumentationType.SWAGGER_2)
                 .apiInfo(apiInfo())
                 .enable(!environment.acceptsProfiles(profiles))
-                .groupName("登录与权限")
+                .groupName("默认分组")
                 .select()
-                .paths(PathSelectors.ant("/api/common/acl/**"))
+                .paths(PathSelectors.ant("/api/**"))
                 .build();
     }
 

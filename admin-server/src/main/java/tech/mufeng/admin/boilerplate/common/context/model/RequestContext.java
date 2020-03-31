@@ -8,7 +8,12 @@ import java.util.List;
 @Data
 @Builder
 public class RequestContext {
-    private Long uid; // 用户uid
-    private String requestId; // 请求ID
-    private List<String> permissions; // 权限
+    // 用户uid
+    private Long uid;
+    // 用户名
+    private String username;
+    // 请求ID
+    private String requestId;
+    // 权限
+    private List<String> permissions;
 }

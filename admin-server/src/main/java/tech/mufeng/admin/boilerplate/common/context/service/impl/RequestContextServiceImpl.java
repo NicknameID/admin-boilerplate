@@ -1,10 +1,13 @@
 package tech.mufeng.admin.boilerplate.common.context.service.impl;
 
 import tech.mufeng.admin.boilerplate.common.acl.model.entity.Permission;
+import tech.mufeng.admin.boilerplate.common.acl.model.entity.User;
 import tech.mufeng.admin.boilerplate.common.acl.service.PermissionService;
+import tech.mufeng.admin.boilerplate.common.acl.service.AclUserService;
 import tech.mufeng.admin.boilerplate.common.constant.UserSessionField;
 import tech.mufeng.admin.boilerplate.common.context.model.RequestContext;
 import tech.mufeng.admin.boilerplate.common.context.service.RequestContextService;
+import tech.mufeng.admin.boilerplate.common.exception.CustomExceptionEnum;
 import tech.mufeng.admin.boilerplate.common.util.SimpleCommonUtil;
 import org.springframework.stereotype.Service;
 
@@ -20,10 +23,19 @@ public class RequestContextServiceImpl implements RequestContextService {
     private HttpSession httpSession;
     @Resource
     private PermissionService permissionService;
+    @Resource
+    private AclUserService aclUserService;
 
     @Override
     public RequestContext init() {
+        long uid = (long) httpSession.getAttribute(UserSessionField.UID);
+        User user = aclUserService.getUserByUid(uid);
+        if (user == null) {
+            CustomExceptionEnum.NOT_LOGIN_EXCEPTION.throwException();
+        }
         RequestContext requestContext = RequestContext.builder()
+                .uid(user.getUid())
+                .username(user.getUsername())
                 .requestId(SimpleCommonUtil.getUppercaseUUID())
                 .permissions(getPermission())
                 .build();

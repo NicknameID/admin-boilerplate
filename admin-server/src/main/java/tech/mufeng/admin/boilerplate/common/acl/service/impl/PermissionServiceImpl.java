@@ -2,19 +2,23 @@ package tech.mufeng.admin.boilerplate.common.acl.service.impl;
 
 import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import lombok.NonNull;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.ObjectUtils;
+import org.springframework.beans.BeanUtils;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import tech.mufeng.admin.boilerplate.common.acl.mapper.PermissionMapper;
 import tech.mufeng.admin.boilerplate.common.acl.model.dto.PermissionTree;
 import tech.mufeng.admin.boilerplate.common.acl.model.entity.Permission;
 import tech.mufeng.admin.boilerplate.common.acl.service.PermissionService;
 import tech.mufeng.admin.boilerplate.config.PermissionModuleEnum;
-import lombok.NonNull;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.BeanUtils;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 /**
@@ -74,7 +78,7 @@ public class PermissionServiceImpl extends ServiceImpl<PermissionMapper, Permiss
      * 同步权限模块到数据库
      */
     @Override
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     public void syncToDB() {
         for (PermissionModuleEnum permissionModuleEnum : PermissionModuleEnum.values()) {
             Permission permission = new Permission();
@@ -92,6 +96,6 @@ public class PermissionServiceImpl extends ServiceImpl<PermissionMapper, Permiss
 
     @Override
     public List<Permission> listByUid(Long uid) {
-        return permissionMapper.listByUid(uid);
+        return ObjectUtils.defaultIfNull(permissionMapper.listByUid(uid), Collections.emptyList());
     }
 }

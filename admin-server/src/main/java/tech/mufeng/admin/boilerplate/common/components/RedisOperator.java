@@ -27,7 +27,9 @@ public class RedisOperator {
     }
 
     public boolean hasKey(String key) {
-        if (key == null) return false;
+        if (key == null) {
+            return false;
+        }
         Boolean hasKey = redisTemplate.hasKey(key);
         return Objects.isNull(hasKey) ? false : hasKey;
     }
@@ -60,18 +62,13 @@ public class RedisOperator {
         return redisTemplate.delete(key);
     }
 
-    /**
-     * 叠加器
-     * @param key
-     * @param time
-     * @param timeUnit
-     * @return
-     */
-    public Long increment(String key, Long time, TimeUnit timeUnit) {
+    public long increment(String key, Long time, TimeUnit timeUnit) {
         BoundValueOperations<String, Object> ops = redisTemplate.boundValueOps(key);
         Long times = ops.increment();
         ops.expire(time, timeUnit);
-        if (times == null) return null;
+        if (times == null) {
+            return 0;
+        }
         return times;
     }
 

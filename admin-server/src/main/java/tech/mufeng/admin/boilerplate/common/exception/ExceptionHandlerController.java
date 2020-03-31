@@ -29,7 +29,7 @@ public class ExceptionHandlerController {
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler({CustomException.class})
     public Result handleCustomException(CustomException exception) {
-        log.warn("业务错误: {}", exception.getMessage());
+        log.warn("业务错误---{}", exception.getMessage());
         exception.printStackTrace();
         return Result.builder()
                 .code(exception.getCode())
@@ -50,7 +50,7 @@ public class ExceptionHandlerController {
             BeanInitializationException.class
     })
     public Result handlerNotValidException(Exception exception) {
-        log.warn("入参数错误{}", exception.getMessage());
+        log.warn("入参数错误---{}", exception.getMessage());
         exception.printStackTrace();
         return Result.builder()
                 .code("UNPROCESSABLE_ENTITY")
@@ -66,7 +66,7 @@ public class ExceptionHandlerController {
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     @ExceptionHandler({Exception.class})
     public Result handleException(Exception exception) {
-        log.error("系统异常: {}", exception.getMessage());
+        log.error("系统异常---{}", exception.getMessage());
         exception.printStackTrace();
         return Result.builder()
                 .code("INTERNAL_SERVER_ERROR")

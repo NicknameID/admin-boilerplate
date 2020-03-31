@@ -27,6 +27,6 @@ public interface PermissionMapper extends BaseMapper<Permission> {
                 "\tLEFT JOIN role_permission ON user_role.role_code = role_permission.role_code\n" +
                 "\tLEFT JOIN permission ON permission.`code` = role_permission.permission_code \n" +
             "WHERE\n" +
-                "\tuser_role.uid = #{uid};")
+                "\tuser_role.uid = #{uid} AND permission.`code` IS NOT NULL;")
     List<Permission> listByUid(@Param("uid") Long uid);
 }
